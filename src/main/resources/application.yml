@@ -1,2 +1,6 @@
 server:
   port: ${PORT:5000}
+
+logging:
+  level:
+    root: INFO

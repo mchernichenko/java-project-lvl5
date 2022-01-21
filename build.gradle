@@ -8,6 +8,8 @@ group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
 //sourceCompatibility = '17'
 
+//applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+
 application {
 	mainClass = 'hexlet.code.AppApplication'
 }
