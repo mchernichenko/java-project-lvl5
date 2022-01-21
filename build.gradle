@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'hexlet.code'
-version = '1.0-SNAPSHOT'
+//version = '1.0-SNAPSHOT'
 //sourceCompatibility = '17'
 
 application {
