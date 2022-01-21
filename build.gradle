@@ -1,7 +1,11 @@
 plugins {
 	id 'org.springframework.boot' version '2.5.6' //'2.6.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'com.adarshr.test-logger' version '2.1.1' // Gradle Test Logger Plugin
+	id 'com.github.ben-manes.versions' version '0.38.0' // Gradle Versions Plugin
 	id 'application'
+	id 'checkstyle'
+	id 'jacoco'
 }
 
 group = 'hexlet.code'
@@ -23,6 +27,11 @@ repositories {
 	mavenCentral()
 }
 
+// чтобы checkstyle не ругался на системные query beans
+//checkstyleMain {
+//	source = fileTree('src/main/java')
+//}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -30,6 +39,27 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+testlogger {
+	showStandardStreams true
+}
+
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.required = true // coveralls plugin depends on xml format report
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it,
+					exclude: ['hexlet/code/AppApplication.class', 'hexlet/code/MigrationGenerator.class',
+							  'hexlet/code/model/query/*.class'
+					]
+			)
+		}))
+	}
 }
 
 // Таска нужная heroku для деплоя

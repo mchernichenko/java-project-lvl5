@@ -1,0 +1,24 @@
+name: Java CI
+
+on:
+  - push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '15'
+          distribution: 'adopt'
+      - name: Publish code coverage
+        uses: paambaati/codeclimate-action@v2.7.5
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+          JACOCO_SOURCE_PATH: "${{github.workspace}}/src/main/java"
+        with:
+          coverageCommand: make build
+          coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
