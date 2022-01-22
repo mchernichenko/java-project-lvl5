@@ -1,0 +1,13 @@
+# H2 для локальной разработки
+spring:
+  datasource:
+    url: jdbc:h2:./hexlet
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2console/
+      settings:
+        web-allow-others: true

@@ -6,6 +6,7 @@ plugins {
 	id 'application'
 	id 'checkstyle'
 	id 'jacoco'
+	id 'org.liquibase.gradle' version '2.1.1'
 }
 
 group = 'hexlet.code'
@@ -33,7 +34,27 @@ repositories {
 //}
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web'      // web-server
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+
+	// DB + migration
+	implementation 'org.liquibase:liquibase-core:4.6.1'
+	runtimeOnly 'com.h2database:h2:1.4.200'
+	implementation 'org.postgresql:postgresql:42.2.24'
+
+	// Зависимости, необходимые для работы плагина liquibase
+	liquibaseRuntime(
+			sourceSets.main.output,
+			'org.liquibase:liquibase-core:4.6.1',
+			'org.liquibase.ext:liquibase-hibernate5:4.6.2',
+			'org.springframework.boot:spring-boot-starter-data-jpa'
+	)
+
+	// for java spicing
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -44,6 +65,32 @@ test {
 
 testlogger {
 	showStandardStreams true
+}
+
+// Таска diffChangeLog для генерации миграционного скрипта при каждом изменении в модели
+diffChangeLog {
+	dependsOn compileJava
+}
+
+// Настройка плагина liquibase-gradle-plugin
+// Скрипт созданный liquibase после сравнения будет представлять из себя разницу между моделью по ссылке referenceUrl и базой по ссылке url
+liquibase {
+	activities {
+		main {
+			// Путь, по которому будет сгенерирован файл миграции
+			changeLogFile 'src/main/resources/db/changelog/changelog-master.xml'
+			// БД с которой будут сравниваться изменения
+			url 'jdbc:h2:./hexlet' // jdbc:postgresql://172.25.120.42:5432/hexletdb
+			username 'sa' // postgres
+			password ''
+			// Пакет с моделями, где 'hibernate:spring' указание на то, что сравнивать нужно с моделями (м.б. указана другая БД)
+			referenceUrl 'hibernate:spring:hexlet.code.model' +
+					// '?dialect=org.hibernate.dialect.PostgreSQL95Dialect' + // -An SQL dialect for Postgres 9.5 and later.
+					'?dialect=org.hibernate.dialect.H2Dialect' +
+					// Правила именования таблиц и столбцов, чтобы они соответствовали правилам Spring
+					'&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy'
+		}
+	}
 }
 
 jacocoTestReport {

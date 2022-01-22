@@ -11,7 +11,13 @@ build:
 	./gradlew clean build
 
 start:
-	./gradlew bootRun
+	./gradlew bootRun --args='--spring.profiles.active=dev'
+
+start-pg:
+	./gradlew bootRun --args='--spring.profiles.active=dev-pg'
+
+start-prod:
+	./gradlew bootRun --args='--spring.profiles.active=prod'
 
 test:
 	./gradlew test
@@ -24,3 +30,6 @@ report:
 
 check-updates:
 	./gradlew dependencyUpdates
+
+generate-migrations:
+	./gradlew diffChangeLog
