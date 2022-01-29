@@ -4,6 +4,8 @@ import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,9 +14,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-   /* @Autowired
+    @Autowired
     private PasswordEncoder passwordEncoder;
-*/
+
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -39,8 +41,8 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
-      //  user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+      //  user.setPassword(userDto.getPassword());
         userRepository.save(user);
         userDto.setId(user.getId());
         userDto.setCreatedAt(user.getCreatedAt());
@@ -53,8 +55,8 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setFirstName(userDto.getFirstName());
         userToUpdate.setLastName(userDto.getLastName());
         userToUpdate.setEmail(userDto.getEmail());
-     //   userToUpdate.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userToUpdate.setPassword(userDto.getPassword());
+        userToUpdate.setPassword(passwordEncoder.encode(userDto.getPassword()));
+     //   userToUpdate.setPassword(userDto.getPassword());
         userRepository.save(userToUpdate);
         userDto.setId(userToUpdate.getId());
         userDto.setCreatedAt(userToUpdate.getCreatedAt());

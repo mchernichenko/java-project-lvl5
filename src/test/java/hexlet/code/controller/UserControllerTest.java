@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.service.TokenService;
 import hexlet.code.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -14,14 +15,17 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -43,6 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //@DBRider
 //@DataSet("user.yml")
 public class UserControllerTest {
+    private static final String BASE_URL = "/api/users";
+    private static final String AUTH_FIELD = "email";
 
     @Autowired
     private TestUtils utils;
@@ -52,6 +58,9 @@ public class UserControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TokenService tokenService;
 
     @AfterEach
     public void clear() {
@@ -63,7 +72,7 @@ public class UserControllerTest {
         assertEquals(0, userRepository.count());
 
         ResultActions resultActions = mockMvc.perform(
-                        post("/api/users")
+                        post(BASE_URL)
                                 .content(utils.asJson(utils.getTestValidUserDto()))
                                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated());
@@ -73,13 +82,17 @@ public class UserControllerTest {
 
     @Test
     void getUserById() throws Exception {
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post(BASE_URL)
                 .content(utils.asJson(utils.getTestValidUserDto()))
                 .contentType(APPLICATION_JSON));
 
         final User expectedUser = userRepository.findAll().get(0);
+        final String token = tokenService.expiring(Map.of(AUTH_FIELD, expectedUser.getEmail()));
 
-        final var response = mockMvc.perform(get("/api/users/" + expectedUser.getId()))
+        MockHttpServletRequestBuilder request = get(BASE_URL + "/{id}", expectedUser.getId())
+                .header(AUTHORIZATION, token);
+
+        final var response = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -94,11 +107,11 @@ public class UserControllerTest {
 
     @Test
     void getAllUsers() throws Exception {
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post(BASE_URL)
                 .content(utils.asJson(utils.getTestValidUserDto()))
                 .contentType(APPLICATION_JSON));
 
-        final var response = mockMvc.perform(get("/api/users"))
+        final var response = mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -112,16 +125,20 @@ public class UserControllerTest {
     void updateUser() throws Exception {
         final UserDto userDto = utils.getTestValidUserDto();
 
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post(BASE_URL)
                 .content(utils.asJson(userDto))
                 .contentType(APPLICATION_JSON));
         final User testUser = userRepository.findAll().get(0);
 
         final UserDto updatedUserDto = new UserDto(null, "first_upd", "last_upd", "email_upd@mail.ru", "pwd_upd", null);
-        mockMvc.perform(
-                        put("/api/users/" + testUser.getId())
-                                .content(utils.asJson(updatedUserDto))
-                                .contentType(APPLICATION_JSON))
+
+        final String token = tokenService.expiring(Map.of(AUTH_FIELD, userDto.getEmail()));
+        MockHttpServletRequestBuilder updateRequest = put(BASE_URL + "/{id}", testUser.getId())
+                .content(utils.asJson(updatedUserDto))
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, token);
+
+        mockMvc.perform(updateRequest)
                 .andExpect(status().isOk());
 
         assertTrue(userRepository.existsById(testUser.getId()));
@@ -134,18 +151,19 @@ public class UserControllerTest {
         final UserDto userDto = utils.getTestValidUserDto();
 
         mockMvc.perform(
-                post("/api/users")
+                post(BASE_URL)
                         .content(utils.asJson(userDto))
                         .contentType(APPLICATION_JSON));
 
         final Long userId = userRepository.findByEmail(userDto.getEmail()).get().getId();
 
-        mockMvc.perform(
-                        delete("/api/users/" + userId))
+        final String token = tokenService.expiring(Map.of(AUTH_FIELD, userDto.getEmail()));
+        MockHttpServletRequestBuilder request = delete(BASE_URL + "/{id}", userId);
+        request.header(AUTHORIZATION, token);
+
+        mockMvc.perform(request)
                 .andExpect(status().isOk());
 
         assertEquals(0, userRepository.count());
     }
-
-
 }
