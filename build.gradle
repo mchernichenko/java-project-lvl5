@@ -11,7 +11,7 @@ plugins {
 
 group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
-//sourceCompatibility = '17'
+sourceCompatibility = '15'
 
 //applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 
@@ -20,7 +20,7 @@ application {
 }
 
 compileJava {
-	options.release = 16
+	options.release = 15
 	options.encoding = 'UTF-8'
 }
 
