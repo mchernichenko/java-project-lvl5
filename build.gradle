@@ -13,7 +13,7 @@ plugins {
 
 group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
-//sourceCompatibility = '15'
+sourceCompatibility = '15' // GitHub Actions supported only 15 version
 
 //applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 

@@ -1,7 +1,6 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.UserDto;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserAuthenticationService;
 import hexlet.code.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
