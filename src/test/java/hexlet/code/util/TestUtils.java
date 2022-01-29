@@ -7,16 +7,10 @@ import hexlet.code.dto.UserDto;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @Component
 public class TestUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private UserRepository userRepository;
@@ -29,10 +23,6 @@ public class TestUtils {
 
     public void tearDown() {
         userRepository.deleteAll();
-    }
-
-    public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
-        return mockMvc.perform(request);
     }
 
     public static String asJson(final Object object) throws JsonProcessingException {
