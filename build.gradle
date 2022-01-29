@@ -30,10 +30,10 @@ repositories {
 	mavenCentral()
 }
 
-//
-checkstyleMain {
-	source = fileTree('src/main/java')
-}
+//checkstyleMain {
+//	source = fileTree('src/main/java')
+//}
+
 
 dependencies {
 	implementation(
