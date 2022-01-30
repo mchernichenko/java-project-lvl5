@@ -2,7 +2,6 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.service.TaskStatusService;
-import hexlet.code.service.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

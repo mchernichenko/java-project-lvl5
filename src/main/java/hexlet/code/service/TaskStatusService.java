@@ -1,8 +1,6 @@
 package hexlet.code.service;
 
 import hexlet.code.dto.TaskStatusDto;
-import hexlet.code.dto.UserDto;
-
 import java.util.List;
 
 public interface TaskStatusService {

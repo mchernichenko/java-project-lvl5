@@ -4,7 +4,6 @@ import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.service.TaskStatusService;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     @Override
     public TaskStatusDto updateStatus(Long statusId, TaskStatusDto taskStatusDto) {
-        TaskStatus taskStatusToUpdate = taskStatusRepository.findById(statusId).orElseThrow(); // NoSuchElementException, если не найден
+        TaskStatus taskStatusToUpdate = taskStatusRepository.findById(statusId).orElseThrow(); // NoSuchElementException
         taskStatusToUpdate.setName(taskStatusDto.getName());
         taskStatusRepository.save(taskStatusToUpdate);
         taskStatusDto.setId(taskStatusToUpdate.getId());
