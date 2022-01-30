@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-      //  user.setPassword(userDto.getPassword());
         userRepository.save(user);
         userDto.setId(user.getId());
         userDto.setCreatedAt(user.getCreatedAt());
@@ -58,7 +57,6 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setLastName(userDto.getLastName());
         userToUpdate.setEmail(userDto.getEmail());
         userToUpdate.setPassword(passwordEncoder.encode(userDto.getPassword()));
-     //   userToUpdate.setPassword(userDto.getPassword());
         userRepository.save(userToUpdate);
         userDto.setId(userToUpdate.getId());
         userDto.setCreatedAt(userToUpdate.getCreatedAt());

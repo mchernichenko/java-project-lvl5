@@ -8,7 +8,7 @@ plugins {
 	id 'jacoco'
 	id 'org.liquibase.gradle' version '2.1.1'
 	id 'org.siouan.frontend-jdk11' version '6.0.0' // Сборщик фронтенда
-	id "com.dorongold.task-tree" version '2.1.0' //
+	id "com.dorongold.task-tree" version '2.1.0' // prints task dependency tree report to the console
 }
 
 group = 'hexlet.code'
@@ -33,7 +33,6 @@ repositories {
 //checkstyleMain {
 //	source = fileTree('src/main/java')
 //}
-
 
 dependencies {
 	implementation(
@@ -121,8 +120,7 @@ jacocoTestReport {
 	}
 }
 
-// Сборка фронтенда.
-// Выполняется только если ничего не изменилось.
+// Сборка фронтенда
 // *****************************************************************************
 frontend {
 	nodeVersion = '16.13.1'

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+import static hexlet.code.util.TestUtils.AUTH_FIELD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Контроллер реализует следующие end points:
- * GET /api/users/{id}  - получение пользователя по идентификатору
  * GET /api/users - получение списка пользователей
+ * GET /api/users/{id}  - получение пользователя по идентификатору
  * POST /api/users - создание пользователя
  * PUT /api/users/{id} - обновление пользователя
  * DELETE /api/users/{id} - удаление пользователя
@@ -49,7 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //@DataSet("user.yml")
 public class UserControllerTest {
     private static final String BASE_URL = "/api/users";
-    private static final String AUTH_FIELD = "email";
 
     @Autowired
     private TestUtils utils;
@@ -65,7 +65,7 @@ public class UserControllerTest {
 
     @AfterEach
     public void clear() {
-        utils.tearDown();
+        userRepository.deleteAll();
     }
 
     @Test

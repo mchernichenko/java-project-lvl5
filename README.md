@@ -4,4 +4,4 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/bc990ec32ef307ecfc93/maintainability)](https://codeclimate.com/github/mchernichenko/java-project-lvl5/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/bc990ec32ef307ecfc93/test_coverage)](https://codeclimate.com/github/mchernichenko/java-project-lvl5/test_coverage)
 
-[Demo on Heroku](http://java-project-lvl5.herokuapp.com/welcome)
+[Demo on Heroku](http://java-project-lvl5.herokuapp.com)

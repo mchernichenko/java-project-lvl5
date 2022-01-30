@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,7 +51,7 @@ public class BaseExceptionHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({HttpMessageNotReadableException.class})
+    @ExceptionHandler({HttpMessageNotReadableException.class, DataIntegrityViolationException.class})
     public String validationExceptionsHandler(Exception exception) {
         return exception.getMessage();
     }

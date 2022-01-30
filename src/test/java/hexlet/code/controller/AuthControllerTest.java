@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.LoginDto;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.util.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,13 +29,14 @@ public class AuthControllerTest {
 
     @Autowired
     private TestUtils utils;
-
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private UserRepository userRepository;
 
     @AfterEach
     public void clear() {
-        utils.tearDown();
+        userRepository.deleteAll();
     }
 
     @Test
