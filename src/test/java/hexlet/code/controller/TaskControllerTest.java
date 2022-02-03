@@ -2,9 +2,9 @@ package hexlet.code.controller;
 
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
-import hexlet.code.dto.TaskStatusDto;
-import hexlet.code.model.TaskStatus;
-import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.dto.TaskDto;
+import hexlet.code.model.Task;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TokenService;
 import hexlet.code.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Map;
 
@@ -32,29 +30,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Контроллер реализует следующие end points:
- * GET /api/statuses - получение списка статусов
- * GET /api/statuses/{id} - получение статуса по идентификатору
- * POST /api/statuses - создание нового статуса
- * PUT /api/statuses/{id} - обновление статуса
- * DELETE /api/statuses/{id} - удаление статуса
+ * GET /tasks/{id} - получение задачи по идентификатору
+ * GET /tasks - получение списка задач
+ * POST /tasks - создание новой задачи
+ * PUT /tasks/{id} - обновление задачи
+ * DELETE /tasks/{id} - удаление задачи
  */
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DBRider
-@DataSet(value = {"users.yml", "taskStatus.yml"}, cleanAfter = true, transactional = true)
-//@Transactional
-public class TaskStatusControllerTest {
-    private static final String BASE_URL = "/api/statuses";
+@DataSet(value = {"users.yml", "taskStatus.yml", "task.yml"}, cleanAfter = true, transactional = true)
+public class TaskControllerTest {
+    private static final String BASE_URL = "/api/tasks";
     private static final String LOGIN = "mikhail.chernichenko@gmail.com";
-    private String userToken;
+
+    private String userToken;;
 
     @Autowired
     private TestUtils utils;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private TaskStatusRepository taskStatusRepository;
+    private TaskRepository taskRepository;
     @Autowired
     private TokenService tokenService;
 
@@ -64,11 +62,12 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    void createStatus() throws Exception {
-        TaskStatusDto newTaskStatusDto = getTestStatusDto();
+    void createTask() throws Exception {
+        TaskDto newTaskDto = getTestTaskDto();
+
         mockMvc.perform(
                         post(BASE_URL)
-                                .content(utils.asJson(newTaskStatusDto))
+                                .content(utils.asJson(newTaskDto))
                                 .contentType(APPLICATION_JSON)
                                 .header(AUTHORIZATION, userToken))
                 .andExpect(status().isOk());
@@ -78,68 +77,66 @@ public class TaskStatusControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getContentAsString()).contains(newTaskStatusDto.getName());
+        assertThat(response.getContentAsString()).contains(newTaskDto.getName());
     }
 
     @Test
-    void createStatusFail() throws Exception {
-        TaskStatusDto newTaskStatusDto = getTestStatusDto();
+    void createTaskFail() throws Exception {
 
-        ResultActions resultActions = mockMvc.perform(
+        TaskDto taskDto = getTestTaskDto();
+
+        mockMvc.perform(
                         post(BASE_URL)
-                                .content(utils.asJson(newTaskStatusDto))
-                                .contentType(APPLICATION_JSON)
-                )
+                                .content(utils.asJson(taskDto))
+                                .contentType(APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void getAllTaskStatus() throws Exception {
+    void getAllTasks() throws Exception {
+
         final var response = mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
 
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
-        assertThat(response.getContentAsString()).contains("new", "in progress", "on test", "finish");
+        assertThat(response.getContentAsString()).contains("Task1", "Task2", "Task3");
     }
 
     @Test
-    void getTaskStatusById() throws Exception {
-
-        MockHttpServletRequestBuilder request = get(BASE_URL + "/{id}", 1);
-
-        final var response = mockMvc.perform(request)
+    void getTaskById() throws Exception {
+        final var response = mockMvc.perform(get(BASE_URL + "/{id}", 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getContentAsString()).contains("new");
-        assertThat(response.getContentAsString()).doesNotContain("in progress");
+        assertThat(response.getContentAsString()).contains("Task1", "Description1");
     }
 
     @Test
-    void updateTaskStatus() throws Exception {
-
-        final TaskStatusDto updatedTaskStatusDto = TaskStatusDto.builder()
-                .name("updateStatus")
+    void updateTask() throws Exception {
+        final TaskDto updateTaskDto = TaskDto.builder()
+                .name("update_name")
+                .description("update_description")
+                .executorId(2L)
+                .taskStatusId(2L)
                 .build();
 
-        MockHttpServletRequestBuilder updateRequest = put(BASE_URL + "/{id}", 1)
-                .content(utils.asJson(updatedTaskStatusDto))
-                .contentType(APPLICATION_JSON)
-                .header(AUTHORIZATION, userToken);
-
-        mockMvc.perform(updateRequest)
+        mockMvc.perform(
+                        put(BASE_URL + "/{id}", 2)
+                                .content(utils.asJson(updateTaskDto))
+                                .contentType(APPLICATION_JSON)
+                                .header(AUTHORIZATION, userToken))
                 .andExpect(status().isOk());
 
-        TaskStatus actualStatus = taskStatusRepository.findById(1L).get();
-        assertThat(actualStatus).isNotNull();
-        assertThat(actualStatus.getName()).isEqualTo("updateStatus");
+        Task actualTask = taskRepository.findById(2L).get();
+        assertThat(actualTask).isNotNull();
+        assertThat(actualTask.getName()).isEqualTo("update_name");
     }
 
     @Test
-    void deleteTaskStatus() throws Exception {
+    void deleteTask() throws Exception {
         mockMvc.perform(
                         delete(BASE_URL + "/{id}", 1)
                                 .header(AUTHORIZATION, userToken))
@@ -147,12 +144,15 @@ public class TaskStatusControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(taskStatusRepository.existsById(1L)).isFalse();
+        assertThat(taskRepository.existsById(1L)).isFalse();
     }
 
-    private TaskStatusDto getTestStatusDto() {
-        return TaskStatusDto.builder()
-                .name("testStatusName")
+    private TaskDto getTestTaskDto() {
+        return TaskDto.builder()
+                .name("New task")
+                .description("Description new task")
+                .executorId(1L)
+                .taskStatusId(1L)
                 .build();
     }
 }

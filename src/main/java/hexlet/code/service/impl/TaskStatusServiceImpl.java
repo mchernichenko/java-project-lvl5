@@ -7,6 +7,7 @@ import hexlet.code.service.TaskStatusService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +45,10 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     @Override
     public TaskStatusDto updateStatus(Long statusId, TaskStatusDto taskStatusDto) {
-        TaskStatus taskStatusToUpdate = taskStatusRepository.findById(statusId).orElseThrow(); // NoSuchElementException
+        TaskStatus taskStatusToUpdate = taskStatusRepository.findById(statusId)
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("taskStatusId '%s' not found.", statusId)
+                ));
         taskStatusToUpdate.setName(taskStatusDto.getName());
         taskStatusRepository.save(taskStatusToUpdate);
         taskStatusDto.setId(taskStatusToUpdate.getId());

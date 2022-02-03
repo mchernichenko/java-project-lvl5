@@ -131,7 +131,12 @@ public class UserControllerTest {
                 .contentType(APPLICATION_JSON));
         final User testUser = userRepository.findAll().get(0);
 
-        final UserDto updatedUserDto = new UserDto(null, "first_upd", "last_upd", "email_upd@mail.ru", "pwd_upd", null);
+        final UserDto updatedUserDto = UserDto.builder()
+                .firstName("first_upd")
+                .lastName("last_upd")
+                .email("email_upd@mail.ru")
+                .password("pwd_upd")
+                .build();
 
         final String token = tokenService.expiring(Map.of(AUTH_FIELD, userDto.getEmail()));
         MockHttpServletRequestBuilder updateRequest = put(BASE_URL + "/{id}", testUser.getId())

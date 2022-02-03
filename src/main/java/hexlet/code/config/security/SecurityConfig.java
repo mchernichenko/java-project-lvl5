@@ -46,6 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * POST /api/login - получение токена для зарегистрированного пользователя
      * GET /api/statuses - получение списка статусов
      * GET /api/statuses/{id} - получение статуса по идентификатору
+     * GET /tasks - получение списка задач
+     * GET /tasks/{id} - получение задачи по идентификатору
      * Все прочие URL не начинающиеся на /api, т.е. не относящиеся непосредственно к приложению,
      * а это h2 консоль, swagger, frontend.
      */
@@ -58,6 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 new AntPathRequestMatcher(baseUrl + "/users", HttpMethod.GET.toString()),
                 new AntPathRequestMatcher(baseUrl + "/statuses", HttpMethod.GET.toString()),
                 new AntPathRequestMatcher(baseUrl + "/statuses/{id}", HttpMethod.GET.toString()),
+                new AntPathRequestMatcher(baseUrl + "/tasks", HttpMethod.GET.toString()),
+                new AntPathRequestMatcher(baseUrl + "/tasks/{id}", HttpMethod.GET.toString()),
                 new AntPathRequestMatcher(baseUrl + "/login", HttpMethod.POST.toString()),
                 new NegatedRequestMatcher(new AntPathRequestMatcher(baseUrl + "/**"))
         );
