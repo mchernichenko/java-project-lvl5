@@ -12,10 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.persistence.Column;
-import javax.persistence.Temporal;
 import javax.validation.constraints.NotBlank;
-
-import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Getter
 @Setter
@@ -32,15 +29,13 @@ public class User {
     @NotBlank
     private String lastName;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NotBlank
     @JsonIgnore
     private String password;
 
-    // private ZonedDateTime createdAt;
     @CreationTimestamp
-    @Temporal(TIMESTAMP)
     private Date createdAt;
 }

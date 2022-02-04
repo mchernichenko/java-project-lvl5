@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -25,5 +26,7 @@ public class TaskDto {
     private long taskStatusId;
 
     private long executorId;
+
+    private Set<Long> labelIds; // Таска может иметь несколько уникальных меток
 
 }

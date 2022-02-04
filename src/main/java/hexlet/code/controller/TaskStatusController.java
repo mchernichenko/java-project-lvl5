@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.TaskStatusDto;
+import hexlet.code.model.TaskStatus;
 import hexlet.code.service.TaskStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,27 +33,27 @@ public class TaskStatusController {
     private TaskStatusService taskStatusService;
 
     @GetMapping(path = "")
-    public List<TaskStatusDto> getAllUsers() {
+    public List<TaskStatus> getAllStatuses() {
         return taskStatusService.getAllStatus();
     }
 
     @GetMapping(path = "/{id}")
-    public TaskStatusDto getUser(@PathVariable("id") Long statusId) {
+    public TaskStatus getStatus(@PathVariable("id") Long statusId) {
         return taskStatusService.getStatusById(statusId);
     }
 
     @PostMapping(path = "")
-    public TaskStatusDto createUser(@RequestBody @Valid TaskStatusDto taskStatusDto) {
+    public TaskStatus createStatus(@RequestBody @Valid TaskStatusDto taskStatusDto) {
         return taskStatusService.createStatus(taskStatusDto);
     }
 
     @PutMapping(path = "/{id}")
-    public TaskStatusDto updateUser(@PathVariable("id") Long statusId, @RequestBody TaskStatusDto taskStatusDto) {
+    public TaskStatus updateStatus(@PathVariable("id") Long statusId, @RequestBody TaskStatusDto taskStatusDto) {
         return taskStatusService.updateStatus(statusId, taskStatusDto);
     }
 
     @DeleteMapping(path = "/{id}")
-    public void deleteUser(@PathVariable("id") Long statusId) {
+    public void deleteStatus(@PathVariable("id") Long statusId) {
         taskStatusService.deleteStatus(statusId);
     }
 }

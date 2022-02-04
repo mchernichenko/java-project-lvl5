@@ -20,40 +20,32 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     }
 
     @Override
-    public List<TaskStatusDto> getAllStatus() {
+    public List<TaskStatus> getAllStatus() {
         return taskStatusRepository.findAll().stream()
-                .map(this::toTaskStatusDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public TaskStatusDto getStatusById(Long statusId) {
+    public TaskStatus getStatusById(Long statusId) {
         return taskStatusRepository.findById(statusId)
-                .map(this::toTaskStatusDto)
                 .orElseThrow(); // NoSuchElementException, если не найден
     }
 
     @Override
-    public TaskStatusDto createStatus(TaskStatusDto taskStatusDto) {
+    public TaskStatus createStatus(TaskStatusDto taskStatusDto) {
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setName(taskStatusDto.getName());
-        taskStatusRepository.save(taskStatus);
-        taskStatusDto.setId(taskStatus.getId());
-        taskStatusDto.setCreatedAt(taskStatus.getCreatedAt());
-        return taskStatusDto;
+        return taskStatusRepository.save(taskStatus);
     }
 
     @Override
-    public TaskStatusDto updateStatus(Long statusId, TaskStatusDto taskStatusDto) {
+    public TaskStatus updateStatus(Long statusId, TaskStatusDto taskStatusDto) {
         TaskStatus taskStatusToUpdate = taskStatusRepository.findById(statusId)
                 .orElseThrow(() -> new NoSuchElementException(
                         String.format("taskStatusId '%s' not found.", statusId)
                 ));
         taskStatusToUpdate.setName(taskStatusDto.getName());
-        taskStatusRepository.save(taskStatusToUpdate);
-        taskStatusDto.setId(taskStatusToUpdate.getId());
-        taskStatusDto.setCreatedAt(taskStatusToUpdate.getCreatedAt());
-        return taskStatusDto;
+        return taskStatusRepository.save(taskStatusToUpdate);
     }
 
     @Override
@@ -62,11 +54,11 @@ public class TaskStatusServiceImpl implements TaskStatusService {
         taskStatusRepository.deleteById(statusId);
     }
 
-    private TaskStatusDto toTaskStatusDto(TaskStatus taskStatus) {
+/*    private TaskStatusDto toTaskStatusDto(TaskStatus taskStatus) {
         TaskStatusDto taskStatusDto = new TaskStatusDto();
         taskStatusDto.setId(taskStatus.getId());
         taskStatusDto.setName(taskStatus.getName());
         taskStatusDto.setCreatedAt(taskStatus.getCreatedAt());
         return taskStatusDto;
-    }
+    }*/
 }

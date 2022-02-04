@@ -1,6 +1,5 @@
 package hexlet.code;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,7 +26,7 @@ public class BaseExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class})
     public List<ObjectError> validationExceptionHandler(MethodArgumentNotValidException exception) {
         return exception.getAllErrors();
     }
@@ -51,8 +50,14 @@ public class BaseExceptionHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({HttpMessageNotReadableException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler({HttpMessageNotReadableException.class})
     public String validationExceptionsHandler(Exception exception) {
         return exception.getMessage();
     }
+
+  /*  @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public String constraintExceptionsHandler(DataIntegrityViolationException exception) {
+        return "Пользовательское сообщение";
+    }*/
 }

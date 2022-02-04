@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Map;
+import java.util.Set;
 
 import static hexlet.code.util.TestUtils.AUTH_FIELD;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DBRider
-@DataSet(value = {"users.yml", "taskStatus.yml", "task.yml"}, cleanAfter = true, transactional = true)
+@DataSet(value = {"users.yml", "taskStatus.yml", "labels.yml", "task.yml"}, cleanAfter = true, transactional = true)
 public class TaskControllerTest {
     private static final String BASE_URL = "/api/tasks";
     private static final String LOGIN = "mikhail.chernichenko@gmail.com";
@@ -78,6 +79,7 @@ public class TaskControllerTest {
                 .getResponse();
 
         assertThat(response.getContentAsString()).contains(newTaskDto.getName());
+        assertThat(response.getContentAsString()).contains("label_1", "label_2");
     }
 
     @Test
@@ -111,7 +113,7 @@ public class TaskControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getContentAsString()).contains("Task1", "Description1");
+        assertThat(response.getContentAsString()).contains("Task1", "Description1", "label_1", "label_2");
     }
 
     @Test
@@ -121,6 +123,7 @@ public class TaskControllerTest {
                 .description("update_description")
                 .executorId(2L)
                 .taskStatusId(2L)
+                .labelIds(Set.of(2L))
                 .build();
 
         mockMvc.perform(
@@ -153,6 +156,7 @@ public class TaskControllerTest {
                 .description("Description new task")
                 .executorId(1L)
                 .taskStatusId(1L)
+                .labelIds(Set.of(1L, 2L))
                 .build();
     }
 }
