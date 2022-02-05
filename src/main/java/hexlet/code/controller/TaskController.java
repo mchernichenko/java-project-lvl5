@@ -4,7 +4,9 @@ import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Task;
 import hexlet.code.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.querydsl.core.types.Predicate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Контроллер реализует следующие end points:
@@ -38,8 +39,8 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping(path = "")
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    public Iterable<Task> getAllTasks(@QuerydslPredicate Predicate predicate) {
+        return taskService.getAllTasks(predicate);
     }
 
     @GetMapping(path = "/{id}")

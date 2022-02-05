@@ -1,5 +1,6 @@
 package hexlet.code.service.impl;
 
+import com.querydsl.core.types.Predicate;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
@@ -14,7 +15,6 @@ import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,8 +30,8 @@ public class TaskServiceImpl implements TaskService {
     private final LabelRepository labelRepository;
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public Iterable<Task> getAllTasks(Predicate predicate) {
+        return taskRepository.findAll(predicate);
     }
 
     @Override

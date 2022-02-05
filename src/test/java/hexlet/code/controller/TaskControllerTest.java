@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.dto.TaskDto;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -148,6 +150,21 @@ public class TaskControllerTest {
                 .getResponse();
 
         assertThat(taskRepository.existsById(1L)).isFalse();
+    }
+
+    @Test
+    void getFilterTasks() throws Exception {
+        final var response = mockMvc.perform(
+                        get(BASE_URL + "?taskStatus=1&executorId=1&labels=1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        List<Task> actualUsers = TestUtils.fromJson(response.getContentAsString(),
+                new TypeReference<List<Task>>() {
+                });
+
+        assertThat(actualUsers.size()).isEqualTo(1);
     }
 
     private TaskDto getTestTaskDto() {
