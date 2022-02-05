@@ -32,9 +32,10 @@ repositories {
 	mavenCentral()
 }
 
-//checkstyleMain {
-//	source = fileTree('src/main/java')
-//}
+// чтобы Q-классы не чекал
+checkstyleMain {
+	source = fileTree('src/main/java')
+}
 
 dependencies {
 	implementation(
