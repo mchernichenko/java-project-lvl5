@@ -3,6 +3,8 @@ package hexlet.code.controller;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Task;
 import hexlet.code.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,26 +40,31 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    @Operation(summary = "Get all tasks", security = @SecurityRequirement(name = "Bearer Token"))
     @GetMapping(path = "")
     public Iterable<Task> getAllTasks(@QuerydslPredicate Predicate predicate) {
         return taskService.getAllTasks(predicate);
     }
 
+    @Operation(summary = "Get task by id", security = @SecurityRequirement(name = "Bearer Token"))
     @GetMapping(path = "/{id}")
     public Task getTask(@PathVariable("id") Long taskId) {
         return taskService.getTaskById(taskId);
     }
 
+    @Operation(summary = "Create task", security = @SecurityRequirement(name = "Bearer Token"))
     @PostMapping(path = "")
     public Task createTask(@RequestBody @Valid TaskDto taskDto) {
         return taskService.createTask(taskDto);
     }
 
+    @Operation(summary = "Update test", security = @SecurityRequirement(name = "Bearer Token"))
     @PutMapping(path = "/{id}")
     public Task updateTask(@PathVariable("id") Long taskId, @RequestBody TaskDto taskDto) {
         return taskService.updateTask(taskId, taskDto);
     }
 
+    @Operation(summary = "Delete task", security = @SecurityRequirement(name = "Bearer Token"))
     @DeleteMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может удалить только сам себя
     public void deleteTask(@PathVariable("id") Long taskId) {

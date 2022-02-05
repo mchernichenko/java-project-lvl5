@@ -3,6 +3,10 @@ package hexlet.code.controller;
 import hexlet.code.dto.UserDto;
 import hexlet.code.service.UserAuthenticationService;
 import hexlet.code.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,17 +46,31 @@ public class UserController {
     @Autowired
     private UserAuthenticationService userAuthenticationService;
 
+    @Operation(summary = "Get all users")
+    @ApiResponse(responseCode = "200", description = "Get list of all users")
     @GetMapping(path = "")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
+    @Operation(summary = "Get user by id", security = @SecurityRequirement(name = "Bearer Token"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get user information"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @GetMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может запрашивать только сам себя
     public UserDto getUser(@PathVariable("id") Long userId) {
         return userService.getUserByUserId(userId);
     }
 
+    @Operation(summary = "Create user")
+    @ApiResponse(responseCode = "201")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created"),
+            @ApiResponse(responseCode = "422", description = "User invalid/Invalid input")
+    })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "")
     public String createUser(@RequestBody @Valid UserDto userDto) {
@@ -60,12 +78,25 @@ public class UserController {
         return userAuthenticationService.login(userDto.getEmail(), userDto.getPassword()); // возвращаем токен
     }
 
+    @Operation(summary = "Update user", security = @SecurityRequirement(name = "Bearer Token"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "422", description = "Invalid input")
+    })
     @PutMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может редактировать только сам себя
     public UserDto updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 
+    @Operation(summary = "Delete user", security = @SecurityRequirement(name = "Bearer Token"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @DeleteMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может удалить только сам себя
     public void deleteUser(@PathVariable("id") Long userId) {

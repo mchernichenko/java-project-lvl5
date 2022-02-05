@@ -3,6 +3,9 @@ package hexlet.code.controller;
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.service.TaskStatusService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,26 +35,32 @@ public class TaskStatusController {
     @Autowired
     private TaskStatusService taskStatusService;
 
+    @Operation(summary = "Get all task statuses", security = @SecurityRequirement(name = "Bearer Token"))
     @GetMapping(path = "")
     public List<TaskStatus> getAllStatuses() {
         return taskStatusService.getAllStatus();
     }
 
+    @Operation(summary = "Get task status by id", security = @SecurityRequirement(name = "Bearer Token"))
     @GetMapping(path = "/{id}")
     public TaskStatus getStatus(@PathVariable("id") Long statusId) {
         return taskStatusService.getStatusById(statusId);
     }
 
+    @Operation(summary = "Create task status", security = @SecurityRequirement(name = "Bearer Token"))
+    @ApiResponse(responseCode = "201")
     @PostMapping(path = "")
     public TaskStatus createStatus(@RequestBody @Valid TaskStatusDto taskStatusDto) {
         return taskStatusService.createStatus(taskStatusDto);
     }
 
+    @Operation(summary = "Update task status", security = @SecurityRequirement(name = "Bearer Token"))
     @PutMapping(path = "/{id}")
     public TaskStatus updateStatus(@PathVariable("id") Long statusId, @RequestBody TaskStatusDto taskStatusDto) {
         return taskStatusService.updateStatus(statusId, taskStatusDto);
     }
 
+    @Operation(summary = "Delete task status", security = @SecurityRequirement(name = "Bearer Token"))
     @DeleteMapping(path = "/{id}")
     public void deleteStatus(@PathVariable("id") Long statusId) {
         taskStatusService.deleteStatus(statusId);

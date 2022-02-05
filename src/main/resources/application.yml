@@ -23,3 +23,7 @@ spring:
     hibernate:
       ddl-auto: validate # проверка, что структура БД соответствует модели
       format_sql: true # чтобы sql был легко читаемым
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.6' //'2.6.3'
+	id 'org.springframework.boot' version '2.6.3' // support Spring Boot in Gradle
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'com.adarshr.test-logger' version '2.1.1' // Gradle Test Logger Plugin
 	id 'com.github.ben-manes.versions' version '0.38.0' // Gradle Versions Plugin
@@ -9,6 +9,9 @@ plugins {
 	id 'org.liquibase.gradle' version '2.1.1'
 	id 'org.siouan.frontend-jdk11' version '6.0.0' // Сборщик фронтенда
 	id "com.dorongold.task-tree" version '2.1.0' // prints task dependency tree report to the console
+	// plugins for swagger
+	id "org.springdoc.openapi-gradle-plugin" version "1.3.3" // generate OAS and run swagger-ui
+	id "com.github.johnrengelman.processes" version "0.5.0" // Gradle process plugin need for openapi-gradle-plugin
 }
 
 group = 'hexlet.code'
@@ -45,7 +48,8 @@ dependencies {
 			'org.springframework.boot:spring-boot-starter-security',
 			'io.jsonwebtoken:jjwt:0.9.1',
 			'com.querydsl:querydsl-core:5.0.0',
-			'com.querydsl:querydsl-jpa:5.0.0'
+			'com.querydsl:querydsl-jpa:5.0.0',
+			'org.springdoc:springdoc-openapi-ui:1.5.12'
 	)
 
 	// DB + migration
@@ -63,8 +67,7 @@ dependencies {
 
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jpa' // генерилка Q-классов при компиляции
 	annotationProcessor 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final'
-	//annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2'
-
+	annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2' // Common Annotations for the JavaTM Platform API
 
 	// for java spicing
 	compileOnly 'org.projectlombok:lombok'
@@ -157,6 +160,14 @@ installFrontend {
 
 processResources.dependsOn assembleFrontend
 // *****************************************************************************
+
+// Настройка плагина springdoc-openapi-ui. После запуска приложения
+// документация для выгрузки будет доступна указанному url
+openApi {
+	apiDocsUrl.set("http://localhost:5000/v3/api-docs.yaml")
+	forkProperties.set("-Dspring.profiles.active=dev")
+	outputFileName.set("openapi.yaml")
+}
 
 // Таска нужная heroku для деплоя
 task stage(dependsOn: ['clean', 'installDist'])

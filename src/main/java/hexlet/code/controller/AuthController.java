@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
 
 import javax.validation.Valid;
 
@@ -22,6 +23,7 @@ public class AuthController {
     @Autowired
     private UserAuthenticationService authenticationService;
 
+    @Operation(summary = "Login")
     @PostMapping(path = "")
     public String login(@RequestBody @Valid final LoginDto loginDto) {
         return authenticationService.login(loginDto.getEmail(), loginDto.getPassword());

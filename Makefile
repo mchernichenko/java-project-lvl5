@@ -33,3 +33,6 @@ check-updates:
 
 generate-migrations:
 	./gradlew diffChangeLog
+
+make api-doc:
+	gradle clean generateOpenApiDocs
