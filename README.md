@@ -4,13 +4,13 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/bc990ec32ef307ecfc93/maintainability)](https://codeclimate.com/github/mchernichenko/java-project-lvl5/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/bc990ec32ef307ecfc93/test_coverage)](https://codeclimate.com/github/mchernichenko/java-project-lvl5/test_coverage)
 
-##Менеджер задач
+## Менеджер задач
 
 [Demo on Heroku](http://java-project-lvl5.herokuapp.com)
 
 [Swagger documentation](http://java-project-lvl5.herokuapp.com/swagger-ui.html)
 
-Stack:
+### Stack:
 * Spring Boot
 * Spring Security
 * Spring Data JPA
@@ -18,7 +18,7 @@ Stack:
 * Database: H2, Postgres
 * Swagger (OAS v3)
 
-Локальный запуск
+### Локальный запуск
 * Клонировать проект: git clone git@github.com:mchernichenko/java-project-lvl5.git
 * Убедитесь, что у вас в системе установлена утилита make, выполнив в терминале команду *make -v*
 
