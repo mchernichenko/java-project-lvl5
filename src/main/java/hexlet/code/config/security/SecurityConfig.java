@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Lazy
     private TokenAuthenticationProvider authenticationProvider;
 
-    /**
+    /*
      * Публичные URL:
      * GET /api/users - получение списка пользователей
      * POST /api/users - создание пользователя

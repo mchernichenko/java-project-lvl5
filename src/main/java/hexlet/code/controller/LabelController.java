@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /api/labels/{id} - получение метки по идентификатору
  * GET /api/labels - получение списка меток

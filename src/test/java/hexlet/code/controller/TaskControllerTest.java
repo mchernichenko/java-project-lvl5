@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /tasks/{id} - получение задачи по идентификатору
  * GET /tasks - получение списка задач

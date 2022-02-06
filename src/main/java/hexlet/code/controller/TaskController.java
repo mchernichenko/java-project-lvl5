@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /tasks/{id} - получение задачи по идентификатору
  * GET /tasks - получение списка задач

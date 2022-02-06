@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import javax.validation.Valid;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /api/login  - получение токена JWT по логину(email) и паролю
  */

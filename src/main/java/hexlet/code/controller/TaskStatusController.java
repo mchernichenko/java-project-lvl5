@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /api/statuses - получение списка статусов
  * GET /api/statuses/{id} - получение статуса по идентификатору

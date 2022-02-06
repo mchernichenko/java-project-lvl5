@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /api/statuses - получение списка статусов
  * GET /api/statuses/{id} - получение статуса по идентификатору

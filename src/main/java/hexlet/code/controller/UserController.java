@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /api/users/{id}  - получение пользователя по идентификатору
  * GET /api/users - получение списка пользователей

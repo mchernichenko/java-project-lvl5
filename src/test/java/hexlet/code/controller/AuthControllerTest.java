@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
+/*
  * Контроллер реализует следующие end points:
  * GET /api/login  - аутентификация пользователя
  */
