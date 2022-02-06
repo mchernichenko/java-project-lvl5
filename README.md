@@ -41,7 +41,7 @@ make api-doc
 
 * Сгенерированная спецификация будет сохранена в папке проекта в файле */build/openapi.yaml*
 * Запущенное приложение будет доступно по адресу: *https://localhost:5000*
-* Swagger UI: *https://localhost:5000/swagger-ui*
+* Swagger UI: *https://localhost:5000/swagger-ui.html*
 * OpenAPI description (json format): *https://localhost:5000/v3/api-docs/*
 
 
