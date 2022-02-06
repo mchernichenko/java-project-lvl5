@@ -32,36 +32,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserByUserId(Long userId) {
+    public User getUserByUserId(Long userId) {
         return userRepository.findById(userId)
-                .map(this::toUserDto)
                 .orElseThrow(); // NoSuchElementException, если не найден
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public User createUser(UserDto userDto) {
         User user = new User();
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userRepository.save(user);
-        userDto.setId(user.getId());
-        userDto.setCreatedAt(user.getCreatedAt());
-        return userDto;
+        return userRepository.save(user);
     }
 
     @Override
-    public UserDto updateUser(Long userId, UserDto userDto) {
+    public User updateUser(Long userId, UserDto userDto) {
         User userToUpdate = userRepository.findById(userId).orElseThrow(); // NoSuchElementException, если не найден
         userToUpdate.setFirstName(userDto.getFirstName());
         userToUpdate.setLastName(userDto.getLastName());
         userToUpdate.setEmail(userDto.getEmail());
         userToUpdate.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userRepository.save(userToUpdate);
-        userDto.setId(userToUpdate.getId());
-        userDto.setCreatedAt(userToUpdate.getCreatedAt());
-        return userDto;
+        return userRepository.save(userToUpdate);
     }
 
     @Override

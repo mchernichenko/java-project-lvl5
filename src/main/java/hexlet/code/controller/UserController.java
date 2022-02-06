@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.UserDto;
+import hexlet.code.model.User;
 import hexlet.code.service.UserAuthenticationService;
 import hexlet.code.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,7 +64,7 @@ public class UserController {
     })
     @GetMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может запрашивать только сам себя
-    public UserDto getUser(@PathVariable("id") Long userId) {
+    public User getUser(@PathVariable("id") Long userId) {
         return userService.getUserByUserId(userId);
     }
 
@@ -75,9 +76,9 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "")
-    public String createUser(@RequestBody @Valid UserDto userDto) {
-        userService.createUser(userDto);
-        return userAuthenticationService.login(userDto.getEmail(), userDto.getPassword()); // возвращаем токен
+    public User createUser(@RequestBody @Valid UserDto userDto) {
+        //userAuthenticationService.login(userDto.getEmail(), userDto.getPassword()); // возвращаем токен
+        return userService.createUser(userDto);
     }
 
     @Operation(summary = "Update user", security = @SecurityRequirement(name = "Bearer Token"))
@@ -89,7 +90,7 @@ public class UserController {
     })
     @PutMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может редактировать только сам себя
-    public UserDto updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
+    public User updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 
