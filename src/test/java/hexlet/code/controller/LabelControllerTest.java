@@ -71,7 +71,7 @@ public class LabelControllerTest {
                                 .content(utils.asJson(newLabelDto))
                                 .contentType(APPLICATION_JSON)
                                 .header(AUTHORIZATION, userToken))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         var response = mockMvc.perform(get(BASE_URL)
                         .header(AUTHORIZATION, userToken))

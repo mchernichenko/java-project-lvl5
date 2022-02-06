@@ -71,7 +71,7 @@ public class TaskStatusControllerTest {
                                 .content(utils.asJson(newTaskStatusDto))
                                 .contentType(APPLICATION_JSON)
                                 .header(AUTHORIZATION, userToken))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         var response = mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
