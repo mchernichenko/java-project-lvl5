@@ -5,6 +5,9 @@ import hexlet.code.model.Task;
 import hexlet.code.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,9 +32,11 @@ import javax.validation.Valid;
  * DELETE /tasks/{id} - удаление задачи
  */
 
+@Tag(name = "task", description = "Operations about task")
 @RestController
 @RequestMapping("${base-url}" + "/tasks")
 public class TaskController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
 
     private static final String ONLY_OWNER_BY_ID = """
             @taskRepository.findById(#taskId).get().getAuthor().getEmail() == authentication.getName()
@@ -43,6 +48,7 @@ public class TaskController {
     @Operation(summary = "Get all tasks", security = @SecurityRequirement(name = "Bearer Token"))
     @GetMapping(path = "")
     public Iterable<Task> getAllTasks(@QuerydslPredicate Predicate predicate) {
+        LOGGER.info("GET /tasks --> Predicate: " + predicate.toString());
         return taskService.getAllTasks(predicate);
     }
 

@@ -2,6 +2,7 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.LoginDto;
 import hexlet.code.service.UserAuthenticationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
  * GET /api/login  - получение токена JWT по логину(email) и паролю
  */
 
+@Tag(name = "auth", description = "Authentication user")
 @RestController
 @RequestMapping("${base-url}" + "/login")
 public class AuthController {
