@@ -14,15 +14,15 @@
 * Spring Boot
 * Spring Security
 * Spring Data JPA
+* Swagger (OAS v3)
 * Liquibase
 * Database: H2, Postgres
-* Swagger (OAS v3)
+* Build tool: Gradle
 
 ### Локальный запуск
 * Клонировать проект: git clone git@github.com:mchernichenko/java-project-lvl5.git
 * Убедитесь, что у вас в системе установлена утилита make, выполнив в терминале команду *make -v*
-
-    * [Что такое Makefile и как начать его использовать](https://guides.hexlet.io/makefile-as-task-runner/)
+  * [Что такое Makefile и как начать его использовать](https://guides.hexlet.io/makefile-as-task-runner/)
 
 * Для запуска проект локально, с использованием H2, из корня проекта выполнить команду
 ```sh
