@@ -1,16 +1,13 @@
 // @ts-check
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Form, Button } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import * as yup from 'yup';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import handleError from '../utils.js';
-import { actions as usersActions } from '../slices/usersSlice.js';
 import { useNotify } from '../hooks/index.js';
 import routes from '../routes.js';
 
@@ -24,8 +21,7 @@ const getValidationSchema = () => yup.object().shape({});
 const Registration = () => {
   const { t } = useTranslation();
   const notify = useNotify();
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const f = useFormik({
     initialValues: {
@@ -40,19 +36,25 @@ const Registration = () => {
         const user = {
           ...userData,
         };
-        const { data } = await axios.post(routes.apiUsers(), user);
+        await axios.post(routes.apiUsers(), user);
 
-        dispatch(usersActions.addUser(data));
         const from = { pathname: routes.loginPagePath() };
-        history.push(from, { message: 'registrationSuccess' });
+        notify.addMessage(t('registrationSuccess'));
+        navigate(from);
+        // dispatch(actions.addTask(task));
       } catch (e) {
         log('create.error', e);
         setSubmitting(false);
-        handleError(e, notify, history);
-        if (e.response?.status === 422 && Array.isArray(e.response?.data)) {
+        // TODO: убрать обработку ошибок в ErrorBoundaries
+        if (e.response?.status === 400) {
+          notify.addErrors([{ defaultMessage: t('registrationFail') }]);
+        } else if (e.response?.status === 422 && Array.isArray(e.response?.data)) {
           const errors = e.response?.data
             .reduce((acc, err) => ({ ...acc, [err.field]: err.defaultMessage }), {});
+          log('validation errors', errors);
           setErrors(errors);
+        } else {
+          notify.addErrors([{ defaultMessage: e.message }]);
         }
       }
     },
@@ -64,8 +66,8 @@ const Registration = () => {
     <>
       <h1 className="my-4">{t('signup')}</h1>
       <Form onSubmit={f.handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="firstName">{t('name')}</Form.Label>
+        <Form.Group className="mb-3" controlId="firstName">
+          <Form.Label>{t('name')}</Form.Label>
           <Form.Control
             type="text"
             value={f.values.firstName}
@@ -73,7 +75,6 @@ const Registration = () => {
             onChange={f.handleChange}
             onBlur={f.handleBlur}
             isInvalid={f.errors.firstName && f.touched.firstName}
-            id="firstName"
             name="firstName"
           />
           <Form.Control.Feedback type="invalid">
@@ -81,8 +82,8 @@ const Registration = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="lastName">{t('surname')}</Form.Label>
+        <Form.Group className="mb-3" controlId="lastName">
+          <Form.Label>{t('surname')}</Form.Label>
           <Form.Control
             type="text"
             value={f.values.lastName}
@@ -90,7 +91,6 @@ const Registration = () => {
             onChange={f.handleChange}
             onBlur={f.handleBlur}
             isInvalid={f.errors.lastName && f.touched.lastName}
-            id="lastName"
             name="lastName"
           />
           <Form.Control.Feedback type="invalid">
@@ -98,8 +98,8 @@ const Registration = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="email">{t('email')}</Form.Label>
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>{t('email')}</Form.Label>
           <Form.Control
             type="email"
             value={f.values.email}
@@ -107,7 +107,6 @@ const Registration = () => {
             onChange={f.handleChange}
             onBlur={f.handleBlur}
             isInvalid={f.errors.email && f.touched.email}
-            id="email"
             name="email"
           />
           <Form.Control.Feedback type="invalid">
@@ -115,8 +114,8 @@ const Registration = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="password">{t('password')}</Form.Label>
+        <Form.Group className="mb-3" controlId="password">
+          <Form.Label>{t('password')}</Form.Label>
           <Form.Control
             type="password"
             value={f.values.password}
@@ -124,7 +123,6 @@ const Registration = () => {
             onChange={f.handleChange}
             onBlur={f.handleBlur}
             isInvalid={f.errors.password && f.touched.password}
-            id="password"
             name="password"
           />
           <Form.Control.Feedback type="invalid">
@@ -133,7 +131,7 @@ const Registration = () => {
         </Form.Group>
 
         <Button variant="primary" type="submit">
-          {t('save')}
+          Submit
         </Button>
       </Form>
     </>

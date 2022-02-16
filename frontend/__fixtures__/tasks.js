@@ -1,35 +1,24 @@
 const getTasks = () => [
   {
     id: 1,
-    author: {
-      id: 1,
-      email: 'string',
-      firstName: 'string',
-      lastName: 'string',
-      createdAt: '2022-01-07T08:35:00.492Z',
-    },
-    executor: {
-      id: 1,
-      email: 'string',
-      firstName: 'string',
-      lastName: 'string',
-      createdAt: '2022-01-07T08:35:00.492Z',
-    },
-    taskStatus: {
-      id: 1,
-      name: 'string',
-      createdAt: '2022-01-07T08:35:00.492Z',
-    },
-    labels: [
-      {
-        id: 1,
-        name: 'string',
-        createdAt: '2022-01-07T08:35:00.492Z',
-      },
-    ],
-    name: 'Задача 1',
-    description: 'описание задачи 1',
-    createdAt: '2022-01-07T08:35:00.492Z',
+    name: 'task1',
+    statusId: 1,
+    executorId: 1,
+    createDate: '3/29/2021, 3:28:13 PM',
+  },
+  {
+    id: 2,
+    name: 'task2',
+    statusId: 2,
+    executorId: 2,
+    createDate: '3/29/2021, 3:28:13 PM',
+  },
+  {
+    id: 2,
+    name: 'task3',
+    statusId: 2,
+    executorId: 2,
+    createDate: '3/29/2021, 3:28:13 PM',
   },
 ];
 

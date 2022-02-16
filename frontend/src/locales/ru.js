@@ -44,7 +44,7 @@ const ru = {
     statusCreated: 'Статус создан',
     logout: 'Выход',
     statusEdit: 'Изменение статуса',
-    statusEdited: 'Статус изменён',
+    statusEdited: 'Статус изменен',
     statusRemoved: 'Статус удалён',
     labelCreated: 'Метка создана',
     labelEdit: 'Изменение метки',
@@ -65,10 +65,7 @@ const ru = {
     taskRemoved: 'Задача удалена',
     enter: 'Войти',
     tasksStatusId: 'Статус',
-    statusName: 'Статус',
-    taskEdit: 'Изменение задачи',
-    accessDenied: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
-    save: 'Сохранить',
+    statusName: 'Наименование',
   },
 };
 

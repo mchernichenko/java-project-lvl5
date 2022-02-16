@@ -1,6 +1,6 @@
 # postgres для локальной разработки
 spring:
   datasource:
-    url: jdbc:postgresql://172.26.226.251:5432/hexletdb
+    url: jdbc:postgresql://172.26.12.203:5432/hexletdb
     username: postgres
     password: postgres

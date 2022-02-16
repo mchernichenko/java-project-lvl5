@@ -26,10 +26,10 @@
 
 * Для запуска проект локально, с использованием H2, из корня проекта выполнить команду
 ```sh
-make start-dev 
+make start 
 ```
-* Для запуска проект локально, с использованием Postgres, в файле конфигурации *java-project-lvl4/src/main/resources/application.yaml*
-  прописать в *datasource.local_pg.url* строку коннекта в БД Postgres и из корня проекта выполнить команду
+* Для запуска проект локально, с использованием Postgres, в файле конфигурации *java-project-lvl5/src/main/resources/config/application-dev-pg.yaml*
+  прописать в *spring.datasource.url* строку коннекта к БД Postgres и из корня проекта выполнить команду
 ```sh
 make start-pg 
 ``` 
@@ -39,10 +39,10 @@ make api-doc
 ```
 ---
 
-* Сгенерированная спецификация будет сохранена в папке проекта в файле */build/openapi.yaml*
-* Запущенное приложение будет доступно по адресу: *https://localhost:5000*
-* Swagger UI: *https://localhost:5000/swagger-ui.html*
-* OpenAPI description (json format): *https://localhost:5000/v3/api-docs/*
+* Сгенерированная спецификация будет сохранена в папке проекта в файле *./build/openapi.yaml*
+* Запущенное приложение будет доступно по адресу: *http://localhost:5000/welcome*
+* OpenAPI приложения см. в Swagger UI, доступный по адресу: *http://localhost:5000/swagger-ui.html*
+* OpenAPI description (json format): *http://localhost:5000/v3/api-docs/*
 
 
 

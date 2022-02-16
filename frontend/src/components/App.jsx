@@ -1,23 +1,20 @@
 // @ts-check
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Switch,
+  Routes,
   Route,
-  Redirect,
-  useHistory,
+  useNavigate,
 } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
 
-import Notification from './Notification.jsx';
-
+import { AuthContext } from '../contexts/index.js';
 import Navbar from './Navbar.jsx';
 import Welcome from './Welcome.jsx';
 import Login from './Login.jsx';
 import Registration from './Registration.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
-import UsersComponent from './Users/Users.jsx';
+import Users from './Users/Users.jsx';
 import EditUser from './Users/EditUser.jsx';
 
 import Statuses from './Statuses/Statuses.jsx';
@@ -34,151 +31,107 @@ import NewTask from './Tasks/NewTask.jsx';
 import EditTask from './Tasks/EditTask.jsx';
 
 import routes from '../routes.js';
+import Notification from './Notification.jsx';
 
-import { actions as usersActions } from '../slices/usersSlice.js';
-import { actions as labelsActions } from '../slices/labelsSlice.js';
-import { actions as taskStatusesActions } from '../slices/taskStatusesSlice.js';
-import { actions as tasksActions } from '../slices/tasksSlice.js';
-
-import { useNotify, useAuth } from '../hooks/index.js';
-import handleError from '../utils.js';
+import { useNotify } from '../hooks/index.js';
 
 import getLogger from '../lib/logger.js';
 
 const log = getLogger('App');
 log.enabled = true;
 
-const App = () => {
-  const notify = useNotify();
-  const history = useHistory();
-  const auth = useAuth();
-  const dispatch = useDispatch();
+const AuthProvider = ({ children }) => {
+  const currentUser = JSON.parse(localStorage.getItem('user'));
+  const navigate = useNavigate();
+  const [user, setUser] = useState(currentUser || null);
 
-  useEffect(() => {
-    const dataRoutes = [
-      {
-        name: 'users',
-        getData: async () => {
-          const { data } = await axios.get(routes.apiUsers());
-          if (!Array.isArray(data)) {
-            notify.addError('Сервер не вернул список пользователей');
-            dispatch(usersActions.addUsers([]));
-            return;
-          }
-          dispatch(usersActions.addUsers(data));
-        },
-        isSecurity: false,
-      },
-      {
-        name: 'labels',
-        getData: async () => {
-          const { data } = await axios.get(routes.apiLabels(), { headers: auth.getAuthHeader() });
-          if (!Array.isArray(data)) {
-            notify.addError('Сервер не вернул список меток');
-            dispatch(labelsActions.addLabels([]));
-            return;
-          }
-          dispatch(labelsActions.addLabels(data));
-        },
-        isSecurity: true,
-      },
-      {
-        name: 'taskStatuses',
-        getData: async () => {
-          const { data } = await axios
-            .get(routes.apiStatuses(), { headers: auth.getAuthHeader() });
-          if (!Array.isArray(data)) {
-            notify.addError('Сервер не вернул список статусов');
-            dispatch(taskStatusesActions.addTaskStatuses([]));
-            return;
-          }
-          dispatch(taskStatusesActions.addTaskStatuses(data));
-        },
-        isSecurity: true,
-      },
-      {
-        name: 'tasks',
-        getData: async () => {
-          const { data } = await axios.get(routes.apiTasks(), { headers: auth.getAuthHeader() });
-          if (!Array.isArray(data)) {
-            notify.addError('Сервер не вернул список задач');
-            dispatch(tasksActions.addTasks([]));
-            return;
-          }
-          dispatch(tasksActions.addTasks(data));
-        },
-        isSecurity: true,
-      },
-    ];
-    const promises = dataRoutes.filter(({ isSecurity }) => (isSecurity ? auth.user : true))
-      .map(({ getData }) => getData());
-    Promise.all(promises)
-      .catch((error) => handleError(error, notify, history, auth));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.user]);
+  const logIn = (userData) => {
+    const userAuth = {
+      ...userData,
+      username: userData.name,
+    };
+    localStorage.setItem('user', JSON.stringify(userAuth));
+    setUser(userAuth);
+  };
 
-  const PrivateRoute = ({ children }) => (
-    auth.user ? children : <Redirect to={routes.loginPagePath()} />
-  );
+  const logOut = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    const from = { pathname: routes.homePagePath() };
+
+    navigate(from);
+  };
+
+  const getAuthHeader = () => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+
+    return userData?.token ? { Authorization: `Bearer ${userData.token}` } : {};
+  };
 
   return (
-    <>
+    <AuthContext.Provider value={{
+      logIn, logOut, getAuthHeader, user,
+    }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+const App = () => {
+  const notify = useNotify();
+  const navigate = useNavigate();
+  useEffect(() => {
+    // TODO: перенести нотификацию в слайсы
+    notify.clean();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate]);
+
+  return (
+    <AuthProvider>
       <Navbar />
       <div className="container wrapper flex-grow-1">
         <Notification />
         <h1 className="my-4">{null}</h1>
-        <Switch>
-          <Route exact path={routes.homePagePath()} component={Welcome} />
-          <Route path={routes.loginPagePath()} component={Login} />
-          <Route path={routes.signupPagePath()} component={Registration} />
+        <Routes>
+          <Route path={routes.homePagePath()} element={<Welcome />} />
+          <Route path={routes.loginPagePath()} element={<Login />} />
+          <Route path={routes.signupPagePath()} element={<Registration />} />
 
-          <Route exact path={routes.usersPagePath()}><UsersComponent /></Route>
-          <Route path={`${routes.usersPagePath()}/:userId/edit`}>
-            <PrivateRoute><EditUser /></PrivateRoute>
-          </Route>
-
-          <Route exact path={routes.statusesPagePath()}>
-            <PrivateRoute><Statuses /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.statusesPagePath()}/new`}>
-            <PrivateRoute><NewStatus /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.statusesPagePath()}/:taskStatusId/edit`}>
-            <PrivateRoute><EditStatus /></PrivateRoute>
+          <Route path={routes.usersPagePath()}>
+            <Route path="" element={<Users />} />
+            <Route path=":userId/edit" element={<EditUser />} />
           </Route>
 
-          <Route exact path={routes.labelsPagePath()}>
-            <PrivateRoute><Labels /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.labelsPagePath()}/:labelId/edit`}>
-            <PrivateRoute><EditLabel /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.labelsPagePath()}/new`}>
-            <PrivateRoute><NewLabel /></PrivateRoute>
+          <Route path={routes.statusesPagePath()}>
+            <Route path="" element={<Statuses />} />
+            <Route path=":statusId/edit" element={<EditStatus />} />
+            <Route path="new" element={<NewStatus />} />
           </Route>
 
-          <Route exact path={routes.tasksPagePath()}>
-            <PrivateRoute><Tasks /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.tasksPagePath()}/new`}>
-            <PrivateRoute><NewTask /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.tasksPagePath()}/:taskId/edit`}>
-            <PrivateRoute><EditTask /></PrivateRoute>
-          </Route>
-          <Route path={`${routes.tasksPagePath()}/:taskId`}>
-            <PrivateRoute><Task /></PrivateRoute>
+          <Route path={routes.labelsPagePath()}>
+            <Route path="" element={<Labels />} />
+            <Route path=":labelId/edit" element={<EditLabel />} />
+            <Route path="new" element={<NewLabel />} />
           </Route>
 
-          <Route path="*" component={NotFoundPage} />
-        </Switch>
+          <Route path={routes.tasksPagePath()}>
+            <Route path="" element={<Tasks />} />
+            <Route path=":taskId" element={<Task />} />
+            <Route path=":taskId/edit" element={<EditTask />} />
+            <Route path="new" element={<NewTask />} />
+          </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </div>
       <footer>
         <div className="container my-5 pt-4 border-top">
           <a rel="noreferrer" href="https://ru.hexlet.io">Hexlet</a>
         </div>
       </footer>
-    </>
+      <ToastContainer />
+    </AuthProvider>
   );
 };
 

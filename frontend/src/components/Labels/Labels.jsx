@@ -1,47 +1,55 @@
 // @ts-check
 
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-import { actions as labelsActions } from '../../slices/labelsSlice.js';
-import handleError from '../../utils.js';
 import { useAuth, useNotify } from '../../hooks/index.js';
 import routes from '../../routes.js';
 
-import getLogger from '../../lib/logger.js';
-
-const log = getLogger('labels');
-log.enabled = true;
-
 const Labels = () => {
   const { t } = useTranslation();
-  const { labels } = useSelector((state) => {
-    log(state);
-    return state.labels;
-  });
+  const [labels, setLabels] = useState([]);
   const auth = useAuth();
   const notify = useNotify();
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(routes.apiLabels(), { headers: auth.getAuthHeader() });
+        setLabels(data);
+      } catch (e) {
+        if (e.response?.status === 401) {
+          const from = { pathname: routes.loginPagePath() };
+          navigate(from);
+          notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+        } else {
+          notify.addErrors([{ defaultMessage: e.message }]);
+        }
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const removeLabel = async (event, id) => {
     event.preventDefault();
     try {
       await axios.delete(`${routes.apiLabels()}/${id}`, { headers: auth.getAuthHeader() });
-      dispatch(labelsActions.removeLabel(id));
-      notify.addMessage('labelRemoved');
+      setLabels(labels.filter((label) => label.id !== id));
+      notify.addMessage(t('labelRemoved'));
     } catch (e) {
-      handleError(e, notify, history, auth);
+      if (e.response?.status === 401) {
+        const from = { pathname: routes.loginPagePath() };
+        navigate(from);
+        notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+      } else {
+        notify.addErrors([{ defaultMessage: e.message }]);
+      }
     }
   };
-
-  if (!labels) {
-    return null;
-  }
 
   return (
     <>

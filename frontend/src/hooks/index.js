@@ -6,7 +6,6 @@ import { ApiContext, AuthContext, NotificationContext } from '../contexts/index.
 
 export const useAuth = () => useContext(AuthContext);
 export const useNotify = () => useContext(NotificationContext);
-export const useValidation = () => useContext(NotificationContext);
 
 export const useApi = () => {
   // TODO: сделать апи

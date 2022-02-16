@@ -1,24 +1,19 @@
 // @ts-check
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-
-import getLogger from '../lib/logger.js';
-
-const log = getLogger('notification');
-log.enabled = true;
+import { useNotify } from '../hooks/index.js';
 
 const Notification = () => {
-  const messages = useSelector((state) => state?.notify?.messages ?? []);
+  const { messages } = useNotify();
   const { t } = useTranslation();
 
   return (
     <>
       {messages.map((message) => (
         <Alert key={message.id} show variant={message.type}>
-          {message.field ? `Поле "${t(message.field)}" - ${t(message.defaultMessage)}` : t(message.text)}
+          {message.field ? `Поле "${t(message.field)}" - ${message.defaultMessage}` : message.defaultMessage}
         </Alert>
       ))}
     </>

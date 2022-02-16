@@ -6,9 +6,8 @@ import { Form, Button } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import handleError from '../utils.js';
 import { useAuth, useNotify } from '../hooks/index.js';
 import routes from '../routes.js';
 
@@ -17,10 +16,10 @@ const getValidationSchema = () => yup.object().shape({});
 const Login = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const auth = useAuth();
   const notify = useNotify();
-  const history = useHistory();
 
   const f = useFormik({
     initialValues: {
@@ -35,17 +34,17 @@ const Login = () => {
 
         auth.logIn({ ...formData, token });
         const { from } = location.state || { from: { pathname: routes.homePagePath() } };
-        history.push(from, { message: 'loginSuccess' });
+        navigate(from);
+        notify.addMessage(t('loginSuccess'));
       } catch (e) {
-        console.log(e);
-        if (e.response?.status === 422 && Array.isArray(e.response?.data)) {
+        if (e.response?.status === 401) {
+          notify.addErrors([{ defaultMessage: t('loginFail') }]);
+        } else if (e.response?.status === 422 && Array.isArray(e.response?.data)) {
           const errors = e.response?.data
             .reduce((acc, err) => ({ ...acc, [err.field]: err.defaultMessage }), {});
           setErrors(errors);
-        } else if (e.response?.status === 401) {
-          notify.addErrors([{ text: 'loginFail' }]);
         } else {
-          handleError(e, notify, history, auth);
+          notify.addErrors([{ defaultMessage: e.message }]);
         }
         setSubmitting(false);
       }
@@ -57,8 +56,8 @@ const Login = () => {
     <>
       <h1 className="my-4">{t('login')}</h1>
       <Form onSubmit={f.handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="email">{t('email')}</Form.Label>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>{t('email')}</Form.Label>
           <Form.Control
             type="text"
             value={f.values.email}
@@ -66,7 +65,6 @@ const Login = () => {
             onChange={f.handleChange}
             onBlur={f.handleBlur}
             isInvalid={f.errors.email && f.touched.email}
-            id="email"
             name="email"
           />
           <Form.Control.Feedback type="invalid">
@@ -74,8 +72,8 @@ const Login = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="password">{t('password')}</Form.Label>
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>{t('password')}</Form.Label>
           <Form.Control
             type="password"
             value={f.values.password}
@@ -83,7 +81,6 @@ const Login = () => {
             onChange={f.handleChange}
             onBlur={f.handleBlur}
             isInvalid={f.errors.password && f.touched.password}
-            id="password"
             name="password"
           />
           <Form.Control.Feedback type="invalid">
@@ -92,7 +89,7 @@ const Login = () => {
         </Form.Group>
 
         <Button variant="primary" type="submit">
-          {t('enter')}
+          Submit
         </Button>
       </Form>
     </>

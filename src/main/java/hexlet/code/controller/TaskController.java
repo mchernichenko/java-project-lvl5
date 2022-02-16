@@ -69,9 +69,9 @@ public class TaskController {
         return taskService.createTask(taskDto);
     }
 
-    @Operation(summary = "Update test", security = @SecurityRequirement(name = "Bearer Token"))
+    @Operation(summary = "Update task", security = @SecurityRequirement(name = "Bearer Token"))
     @PutMapping(path = "/{id}")
-    public Task updateTask(@PathVariable("id") Long taskId, @RequestBody TaskDto taskDto) {
+    public Task updateTask(@PathVariable("id") Long taskId, @RequestBody @Valid TaskDto taskDto) {
         return taskService.updateTask(taskId, taskDto);
     }
 

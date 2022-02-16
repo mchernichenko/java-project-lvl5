@@ -1,40 +1,61 @@
 // @ts-check
 
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-import handleError from '../../utils.js';
 import { useAuth, useNotify } from '../../hooks/index.js';
 import routes from '../../routes.js';
 import TaskFilter from './TaskFilter.jsx';
-import { actions as taskActions } from '../../slices/tasksSlice.js';
 
 const Tasks = () => {
   const { t } = useTranslation();
-  const tasks = useSelector((state) => state.tasks?.tasks);
-  const [filteredTasks, setFilteredTasks] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const auth = useAuth();
   const notify = useNotify();
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  if (!tasks) {
-    return null;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(routes.apiTasks(), { headers: auth.getAuthHeader() });
+        setTasks(data);
+      } catch (e) {
+        if (e.response?.status === 401) {
+          const from = { pathname: routes.loginPagePath() };
+          navigate(from);
+          notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+        } else if (e.response?.status === 422 && e.response?.data) {
+          notify.addErrors(e.response?.data);
+        } else {
+          notify.addErrors([{ defaultMessage: e.message }]);
+        }
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const removeTask = async (event, id) => {
     event.preventDefault();
     try {
       await axios.delete(`${routes.apiTasks()}/${id}`, { headers: auth.getAuthHeader() });
-      dispatch(taskActions.removeTask((id)));
-      notify.addMessage('taskRemoved');
+      setTasks(tasks.filter((task) => task.id !== id));
+      notify.addMessage(t('taskRemoved'));
     } catch (e) {
-      handleError(e, notify, history, auth);
-      if (e.response?.status === 403) {
+      // notify.addErrors(e.response?.data);
+      if (e.response?.status === 401) {
+        const from = { pathname: routes.loginPagePath() };
+        navigate(from);
+        notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+      } else if (e.response?.status === 403) {
         notify.addErrors([{ defaultMessage: t('Задачу может удалить только её автор') }]);
+      } else if (e.response?.status === 422 && e.response?.data) {
+        notify.addErrors(e.response?.data);
+      } else {
+        notify.addErrors([{ defaultMessage: e.message }]);
       }
     }
   };
@@ -42,7 +63,7 @@ const Tasks = () => {
   return (
     <>
       <Link to={`${routes.tasksPagePath()}/new`}>{t('createTask')}</Link>
-      <TaskFilter foundTasks={setFilteredTasks} />
+      <TaskFilter foundTasks={(filteredTasks) => setTasks(filteredTasks)} />
       <Table striped hover>
         <thead>
           <tr>
@@ -56,7 +77,7 @@ const Tasks = () => {
           </tr>
         </thead>
         <tbody>
-          {(filteredTasks ?? tasks).map((task) => (
+          {tasks.map((task) => (
             <tr key={task.id}>
               <td>{task?.id}</td>
               <td>

@@ -1,38 +1,58 @@
 // @ts-check
 
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-import { actions } from '../../slices/taskStatusesSlice.js';
-import handleError from '../../utils.js';
 import { useAuth, useNotify } from '../../hooks/index.js';
 import routes from '../../routes.js';
 
 const Statuses = () => {
   const { t } = useTranslation();
+  const [statuses, setStatuses] = useState([]);
   const auth = useAuth();
   const notify = useNotify();
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { taskStatuses } = useSelector((state) => state.taskStatuses);
-
-  if (!taskStatuses) {
-    return null;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(routes.apiStatuses(), { headers: auth.getAuthHeader() });
+        setStatuses(data);
+      } catch (e) {
+        if (e.response?.status === 401) {
+          const from = { pathname: routes.loginPagePath() };
+          navigate(from);
+          notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+        } else if (e.response?.status === 422) {
+          notify.addErrors(e.response?.data);
+        } else {
+          notify.addErrors([{ defaultMessage: e.message }]);
+        }
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const removeStatus = async (event, id) => {
     event.preventDefault();
     try {
       await axios.delete(`${routes.apiStatuses()}/${id}`, { headers: auth.getAuthHeader() });
-      dispatch(actions.removeTaskStatus(id));
-      notify.addMessage('statusRemoved');
+      setStatuses(statuses.filter((status) => status.id !== id));
+      notify.addMessage(t('statusRemoved'));
     } catch (e) {
-      handleError(e, notify, history, auth);
+      if (e.response?.status === 401) {
+        const from = { pathname: routes.loginPagePath() };
+        navigate(from);
+        notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+      } else if (e.response?.status === 422 && e.response?.data) {
+        notify.addErrors(e.response?.data);
+      } else {
+        notify.addErrors([{ defaultMessage: e.message }]);
+      }
     }
   };
 
@@ -48,7 +68,7 @@ const Statuses = () => {
           </tr>
         </thead>
         <tbody>
-          {taskStatuses.map((status) => (
+          {statuses.map((status) => (
             <tr key={status.id}>
               <td>{status.id}</td>
               <td>{status.name}</td>

@@ -1,19 +1,16 @@
 // @ts-check
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Form, Button } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import { actions as taskStatusesActions } from '../../slices/taskStatusesSlice.js';
 import routes from '../../routes.js';
 import { useAuth, useNotify } from '../../hooks/index.js';
 
-import handleError from '../../utils.js';
 import getLogger from '../../lib/logger.js';
 
 const log = getLogger('client');
@@ -22,10 +19,10 @@ const getValidationSchema = () => yup.object().shape({});
 
 const NewStatus = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  // const dispatch = useDispatch();
+  const navigate = useNavigate();
   const auth = useAuth();
   const notify = useNotify();
-  const dispatch = useDispatch();
 
   const f = useFormik({
     initialValues: {
@@ -35,20 +32,26 @@ const NewStatus = () => {
     onSubmit: async ({ name }, { setSubmitting, setErrors }) => {
       const status = { name };
       try {
+        // const data = await api.createLabel(label);
         log('status.create', status);
-        const { data } = await axios
-          .post(routes.apiStatuses(), status, { headers: auth.getAuthHeader() });
-        dispatch(taskStatusesActions.addTaskStatus(data));
+        await axios.post(routes.apiStatuses(), status, { headers: auth.getAuthHeader() });
+        // dispatch(actions.addStatus(label));
         const from = { pathname: routes.statusesPagePath() };
-        history.push(from, { message: 'statusCreated' });
+        navigate(from);
+        notify.addMessage(t('statusCreated'));
       } catch (e) {
         log('label.create.error', e);
         setSubmitting(false);
-        handleError(e, notify, history, auth);
-        if (e.response?.status === 422 && Array.isArray(e.response?.data)) {
+        if (e.response?.status === 401) {
+          const from = { pathname: routes.loginPagePath() };
+          navigate(from);
+          notify.addErrors([{ defaultMessage: t('Доступ запрещён! Пожалуйста, авторизируйтесь.') }]);
+        } else if (e.response?.status === 422 && e.response?.data) {
           const errors = e.response?.data
             .reduce((acc, err) => ({ ...acc, [err.field]: err.defaultMessage }), {});
           setErrors(errors);
+        } else {
+          notify.addErrors([{ defaultMessage: e.message }]);
         }
       }
     },
@@ -61,7 +64,7 @@ const NewStatus = () => {
       <h1 className="my-4">{t('statusCreating')}</h1>
       <Form onSubmit={f.handleSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label htmlFor="name">{t('naming')}</Form.Label>
+          <Form.Label>{t('naming')}</Form.Label>
           <Form.Control
             className="mb-2"
             disabled={f.isSubmitting}

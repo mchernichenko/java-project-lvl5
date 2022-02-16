@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,7 +36,7 @@ public class Label {
     private Date createdAt;
 
     // владелец связи - Task. labels - имя атрибута в Task, а не имя таблицы
-    @ManyToMany (cascade = CascadeType.ALL, mappedBy = "labels")
+    @ManyToMany (mappedBy = "labels")
     @JsonIgnore
     private Set<Task> tasks;
 }

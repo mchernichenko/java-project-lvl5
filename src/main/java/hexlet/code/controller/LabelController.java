@@ -77,7 +77,7 @@ public class LabelController {
             @ApiResponse(responseCode = "404", description = "Not found")
     })
     @PutMapping(path = "/{id}")
-    public Label updateLabel(@PathVariable("id") Long labelId, @RequestBody LabelDto labelDto) {
+    public Label updateLabel(@PathVariable("id") Long labelId, @RequestBody @Valid LabelDto labelDto) {
         return labelService.updateLabel(labelId, labelDto);
     }
 

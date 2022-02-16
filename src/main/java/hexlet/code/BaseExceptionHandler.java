@@ -1,5 +1,7 @@
 package hexlet.code;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,13 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
 @RestControllerAdvice
 public class BaseExceptionHandler {
-    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public String generalExceptionHandler(Exception exception) {
         return exception.getMessage();
@@ -43,21 +41,24 @@ public class BaseExceptionHandler {
         return exception.getMessage();
     }
 
-    @ResponseStatus(FORBIDDEN)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public String accessDeniedException(AccessDeniedException exception) {
         return exception.getMessage();
     }
 
-    @ResponseStatus(BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({HttpMessageNotReadableException.class})
     public String validationExceptionsHandler(Exception exception) {
         return exception.getMessage();
     }
 
-  /*  @ResponseStatus(BAD_REQUEST)
+    // ошибки связанные с SQL - 422, так как данные были переданы клиентом, а значит и ошибка не сервера, а клиента
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler({DataIntegrityViolationException.class})
     public String constraintExceptionsHandler(DataIntegrityViolationException exception) {
-        return "Пользовательское сообщение";
-    }*/
+        // достаём ошибку базы, т.к. она более информативная
+        String msg = ((ConstraintViolationException) exception.getCause()).getSQLException().getMessage();
+        return msg;
+    }
 }

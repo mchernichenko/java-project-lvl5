@@ -12,8 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
                 title = "Task Manager OpenAPI definition",
                 version = "1.0",
                 description = " API для работы с пользователями, задачами и справочниками: "
-                        + "просмотр задач, фильтрация задач, назначение задач пользователям,"
-                        + " изменение и удаление задач.\n"
+                        + "просмотр задач, фильтрация задач, назначение задач пользователям, "
+                        + "изменение и удаление задач. "
                         + "CRUD операции для атрибутов задач: пользователи, статусы, метки.",
                 contact = @Contact(
                         name = "Mikhail Chernichenko",

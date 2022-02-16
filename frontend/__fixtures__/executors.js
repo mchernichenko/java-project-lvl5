@@ -1,17 +1,21 @@
 const getExecutors = () => [
   {
     id: 1,
-    email: 'ivan@google.com',
-    firstName: 'Ivan',
-    lastName: 'Ivanov',
-    createdAt: '2021-12-29T04:19:43.774+00:00',
+    name: 'executor1',
+    email: 'email1',
+    createDate: '3/29/2021, 3:28:13 PM',
   },
   {
     id: 2,
-    email: 'ivan@google.com',
-    firstName: 'Petr',
-    lastName: 'Petrov',
-    createdAt: '2021-12-29T04:19:43.774+00:00',
+    name: 'executor2',
+    email: 'email2',
+    createDate: '3/29/2021, 3:28:13 PM',
+  },
+  {
+    id: 3,
+    name: 'executor3',
+    email: 'email3',
+    createDate: '3/29/2021, 3:28:13 PM',
   },
 ];
 

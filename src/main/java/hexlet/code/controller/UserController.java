@@ -90,7 +90,7 @@ public class UserController {
     })
     @PutMapping(path = "/{id}")
     @PreAuthorize(ONLY_OWNER_BY_ID) // пользователь может редактировать только сам себя
-    public User updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
+    public User updateUser(@PathVariable("id") Long userId, @RequestBody @Valid UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 

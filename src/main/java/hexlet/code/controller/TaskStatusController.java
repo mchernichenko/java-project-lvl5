@@ -61,7 +61,7 @@ public class TaskStatusController {
 
     @Operation(summary = "Update task status", security = @SecurityRequirement(name = "Bearer Token"))
     @PutMapping(path = "/{id}")
-    public TaskStatus updateStatus(@PathVariable("id") Long statusId, @RequestBody TaskStatusDto taskStatusDto) {
+    public TaskStatus updateStatus(@PathVariable("id") Long statusId, @RequestBody @Valid TaskStatusDto taskStatusDto) {
         return taskStatusService.updateStatus(statusId, taskStatusDto);
     }
 
